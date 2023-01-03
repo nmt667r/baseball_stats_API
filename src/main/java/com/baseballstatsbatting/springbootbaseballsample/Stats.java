@@ -1,6 +1,6 @@
 package com.baseballstatsbatting.springbootbaseballsample;
 
-public class Results {
+public class Stats {
 	private int id; //ID
 	private String name; //選手名
 	private String league; //リーグ名
