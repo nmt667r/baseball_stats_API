@@ -3,6 +3,7 @@ package com.baseballstatsbatting.springbootbaseballsample;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -17,14 +18,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ResultController {
 	@GetMapping("/NPB")
-	public List<Results> GetStats(@RequestParam(value = "league", defaultValue = "c") String league) throws IOException{
-		Document document = Jsoup.connect("https://npb.jp/bis/2022/stats/bat_"+league+".html").get();
+	public List<Results> GetStats(@RequestParam Map<String,String> requestParams) throws IOException{
+		String league = validParamLeague(requestParams.get("league"));
+		String year = validParamYear(requestParams.get("year"));
+		Document document = Jsoup.connect("https://npb.jp/bis/"+year+"/stats/bat_"+league+".html").get();
 		//List<Results> results = setStats(statsArray, year, league);
 		Elements statsArray = document.select("tr");
 		List<Results> results = setStats(statsArray, league);
 		return results;
 	}
-	
+
 	public final static List<Results> setStats(Elements statsArray, String league) throws IOException {
 		//プレイヤー配列を用意
 		List<Results> results = new ArrayList<Results>();
@@ -64,7 +67,29 @@ public class ResultController {
 		}
 		return results;
 	}
-	
+
+	public final static String validParamLeague(String league) {
+		if(league == null) {
+			league = "c";
+		} else if(league != "c" && league != "p"){
+			league = "c";
+		}
+		return league;
+	}
+
+	public final static String validParamYear(String year) {
+		if(year == null) {
+			year = "2022";
+		} else if (!year.matches("[0-9]+")) {
+			year = "2022";
+		} else if(Integer.parseInt(year) > 2022){
+			year = "2022";
+		} else if (Integer.parseInt(year) < 2005) {
+			year = "2022";
+		}
+		return year;
+	}
+
 	public final static String getLeagueString(String league) throws IOException {
 		if(league.equals("c")) {
 			league = "セ";
